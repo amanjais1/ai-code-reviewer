@@ -9,20 +9,29 @@ import axios from 'axios'
 import './App.css'
 
 function App() {
-  const [ count, setCount ] = useState(0)
-  const [ code, setCode ] = useState(` function sum() {
+  const [count, setCount] = useState(0)
+  const [code, setCode] = useState(` function sum() {
   return 1 + 1
 }`)
 
-  const [ review, setReview ] = useState(``)
+  const [review, setReview] = useState(``)
 
   useEffect(() => {
     prism.highlightAll()
   }, [])
 
   async function reviewCode() {
-    const response = await axios.post('http://localhost:3000/ai/get-review', { code })
-    setReview(response.data)
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/ai/get-review",
+        { code }
+      );
+
+      setReview(response.data.review);
+    } catch (error) {
+      console.error(error);
+      setReview("Failed to generate review.");
+    }
   }
 
   return (
@@ -52,7 +61,7 @@ function App() {
         <div className="right">
           <Markdown
 
-            rehypePlugins={[ rehypeHighlight ]}
+            rehypePlugins={[rehypeHighlight]}
 
           >{review}</Markdown>
         </div>
